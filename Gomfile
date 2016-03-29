@@ -1,0 +1,4 @@
+gom 'github.com/achiku/varfmt'
+gom 'github.com/lestrrat/go-jshschema'
+gom 'github.com/lestrrat/go-jsschema'
+gom 'gopkg.in/alecthomas/kingpin.v2'
