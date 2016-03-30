@@ -39,6 +39,8 @@ Args:
   [<file>]  Path of JSON Schema
 ```
 
+Output Example: [./convertor_test.go](./convertor_test.go)
+
 ## Todo
 
 - [ ] Add tests
