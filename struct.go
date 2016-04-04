@@ -8,6 +8,7 @@ type Struct struct {
 	Nullable   bool
 	Type       string
 	Ref        string
+	Packages   map[string]string
 	Properties PropertyList
 }
 
@@ -22,6 +23,14 @@ func (st *Struct) Key() string {
 		name = slice[len(slice)-1]
 	}
 	return name
+}
+
+// AddPkg is adding package
+func (st *Struct) AddPkg(name string) {
+	if st.Packages == nil {
+		st.Packages = make(map[string]string)
+	}
+	st.Packages[name] = name
 }
 
 func (pl PropertyList) Len() int {

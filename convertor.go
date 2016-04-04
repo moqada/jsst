@@ -64,10 +64,24 @@ func ReadFile(file string) (*Convertor, error) {
 }
 
 func (con *Convertor) Write(out io.Writer) error {
-	source := "package " + con.Package + "\n"
+	head := "package " + con.Package + "\n"
+	imports := make(map[string]string)
+	source := ""
 	for _, key := range con.Resolved.SortedKeys() {
-		source += structToString(con.Resolved[key], &con.Resolved, true)
+		s := con.Resolved[key]
+		for _, p := range s.Packages {
+			imports[p] = p
+		}
+		source += structToString(s, &con.Resolved, true)
 	}
+	if len(imports) > 0 {
+		head += "import (\n"
+		for _, p := range imports {
+			head += fmt.Sprintf("\"%s\"", p)
+		}
+		head += ")\n"
+	}
+	source = head + source
 	b, err := format.Source([]byte(source))
 	if err != nil {
 		return err
@@ -117,11 +131,14 @@ func extractProps(name string, sc *schema.Schema, resolved *StructMap) (*Struct,
 			return nil, err
 		}
 	}
-	t, err := getPropertyType(sc)
+	t, pkg, err := getPropertyType(sc)
 	if err != nil {
 		return nil, err
 	}
 	st := Struct{Name: name, Type: t, Ref: ref}
+	if pkg != "" {
+		st.AddPkg(pkg)
+	}
 	switch t {
 	case "object":
 		for k, v := range sc.Properties {
@@ -130,6 +147,9 @@ func extractProps(name string, sc *schema.Schema, resolved *StructMap) (*Struct,
 				return nil, err
 			}
 			st.Properties = append(st.Properties, *s)
+			for _, p := range s.Packages {
+				st.AddPkg(p)
+			}
 		}
 		// TODO: ref == "" -> uuid?
 		if ref != "" {
@@ -145,6 +165,9 @@ func extractProps(name string, sc *schema.Schema, resolved *StructMap) (*Struct,
 			return nil, err
 		}
 		st.Properties = append(st.Properties, *s)
+		for _, p := range s.Packages {
+			st.AddPkg(p)
+		}
 		// TODO: ref == "" -> uuid?
 		if ref != "" {
 			(*resolved)[ref] = &st
@@ -154,11 +177,12 @@ func extractProps(name string, sc *schema.Schema, resolved *StructMap) (*Struct,
 }
 
 // getPropertyType convert Schema into type of Go
-func getPropertyType(s *schema.Schema) (string, error) {
+func getPropertyType(s *schema.Schema) (string, string, error) {
+	pkg := ""
 	if len(s.Type) != 1 {
 		// TODO: Support multiple types
 		// TODO: Support Nullable
-		return "", fmt.Errorf("Multiple Types doesnot Support.")
+		return "", pkg, fmt.Errorf("Multiple Types doesnot Support.")
 	}
 	t := s.Type[0].String()
 	switch t {
@@ -166,8 +190,12 @@ func getPropertyType(s *schema.Schema) (string, error) {
 		t = "float64"
 	case "boolean":
 		t = "bool"
+	case "string":
+		if s.Format == "date-time" {
+			return "time.Time", "time", nil
+		}
 	}
-	return t, nil
+	return t, pkg, nil
 }
 
 // Convert Struct.Property into string

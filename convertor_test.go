@@ -9,25 +9,29 @@ func ExampleConvertor() {
 	// Output:
 	// package main
 	//
+	// import (
+	// 	"time"
+	// )
+	//
 	// type Info struct {
-	// 	Content     string `json:"content"`
-	// 	ID          string `json:"id"`
-	// 	PublishedAt string `json:"publishedAt"`
-	// 	Title       string `json:"title"`
+	// 	Content     string    `json:"content"`
+	// 	ID          string    `json:"id"`
+	// 	PublishedAt time.Time `json:"publishedAt"`
+	// 	Title       string    `json:"title"`
 	// }
 	// type User struct {
-	// 	AddressCity  string `json:"addressCity"`
-	// 	AddressLine1 string `json:"addressLine1"`
-	// 	AddressLine2 string `json:"addressLine2"`
-	// 	AddressState string `json:"addressState"`
-	// 	AddressZip   string `json:"addressZip"`
-	// 	Birthday     string `json:"birthday"`
-	// 	FirstName    string `json:"firstName"`
-	// 	ID           string `json:"id"`
-	// 	Infos        []Info `json:"infos"`
-	// 	LastName     string `json:"lastName"`
-	// 	RegisteredAt string `json:"registeredAt"`
-	// 	Tel          string `json:"tel"`
+	// 	AddressCity  string    `json:"addressCity"`
+	// 	AddressLine1 string    `json:"addressLine1"`
+	// 	AddressLine2 string    `json:"addressLine2"`
+	// 	AddressState string    `json:"addressState"`
+	// 	AddressZip   string    `json:"addressZip"`
+	// 	Birthday     string    `json:"birthday"`
+	// 	FirstName    string    `json:"firstName"`
+	// 	ID           string    `json:"id"`
+	// 	Infos        []Info    `json:"infos"`
+	// 	LastName     string    `json:"lastName"`
+	// 	RegisteredAt time.Time `json:"registeredAt"`
+	// 	Tel          string    `json:"tel"`
 	// }
 
 }
