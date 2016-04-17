@@ -223,9 +223,9 @@ func structToString(st *Struct, resolved *StructMap, root bool) string {
 		for _, prop := range st.Properties {
 			t += structToString(&prop, resolved, false)
 		}
-		t += "}\n"
+		t += "}"
 	}
-	t = typePre + t
+	t = typePre + t + "\n"
 	if root {
 		return typeDef + t
 	}
