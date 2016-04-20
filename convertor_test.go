@@ -14,24 +14,24 @@ func ExampleConvertor() {
 	// )
 	//
 	// type Info struct {
-	// 	Content     string    `json:"content"`
-	// 	ID          string    `json:"id"`
-	// 	PublishedAt time.Time `json:"publishedAt"`
-	// 	Title       string    `json:"title"`
+	// 	Content     string    `json:"content,omitempty"`
+	// 	ID          string    `json:"id,omitempty"`
+	// 	PublishedAt time.Time `json:"publishedAt,omitempty"`
+	// 	Title       string    `json:"title,omitempty"`
 	// }
 	// type User struct {
-	// 	AddressCity  string    `json:"addressCity"`
-	// 	AddressLine1 string    `json:"addressLine1"`
-	// 	AddressLine2 string    `json:"addressLine2"`
-	// 	AddressState string    `json:"addressState"`
-	// 	AddressZip   string    `json:"addressZip"`
+	// 	AddressCity  string    `json:"addressCity,omitempty"`
+	// 	AddressLine1 string    `json:"addressLine1,omitempty"`
+	// 	AddressLine2 string    `json:"addressLine2,omitempty"`
+	// 	AddressState string    `json:"addressState,omitempty"`
+	// 	AddressZip   string    `json:"addressZip,omitempty"`
 	// 	Birthday     string    `json:"birthday"`
 	// 	FirstName    string    `json:"firstName"`
 	// 	ID           string    `json:"id"`
-	// 	Infos        []Info    `json:"infos"`
+	// 	Infos        []Info    `json:"infos,omitempty"`
 	// 	LastName     string    `json:"lastName"`
 	// 	RegisteredAt time.Time `json:"registeredAt"`
-	// 	Tel          string    `json:"tel"`
+	// 	Tel          string    `json:"tel,omitempty"`
 	// }
 
 }

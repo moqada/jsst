@@ -120,6 +120,15 @@ func (con *Convertor) SetPackage(name string) {
 	con.Package = name
 }
 
+func isIncludes(name string, array []string) bool {
+	for _, n := range array {
+		if name == n {
+			return true
+		}
+	}
+	return false
+}
+
 // extractProps extract Schema.Properties to Struct
 func extractProps(name string, sc *schema.Schema, resolved *StructMap) (*Struct, error) {
 	var err error
@@ -146,6 +155,7 @@ func extractProps(name string, sc *schema.Schema, resolved *StructMap) (*Struct,
 			if err != nil {
 				return nil, err
 			}
+			s.Required = isIncludes(k, sc.Required)
 			st.Properties = append(st.Properties, *s)
 			for _, p := range s.Packages {
 				st.AddPkg(p)
@@ -199,8 +209,12 @@ func getPropertyType(s *schema.Schema) (string, string, error) {
 }
 
 // Convert Struct.Property into string
-func propToString(name, goType string) string {
-	return fmt.Sprintf("%s %s `json:\"%s\"`\n", varfmt.PublicVarName(name), goType, name)
+func propToString(name, goType string, required bool) string {
+	empty := ""
+	if !required {
+		empty = ",omitempty"
+	}
+	return fmt.Sprintf("%s %s `json:\"%s%s\"`\n", varfmt.PublicVarName(name), goType, name, empty)
 }
 
 // Convert Struct into string
@@ -216,7 +230,7 @@ func structToString(st *Struct, resolved *StructMap, root bool) string {
 			if typePre == "" {
 				typePre = "*"
 			}
-			return propToString(st.Name, typePre+varfmt.PublicVarName(res.Key()))
+			return propToString(st.Name, typePre+varfmt.PublicVarName(res.Key()), st.Required)
 		}
 	}
 	t := st.Type
@@ -232,5 +246,5 @@ func structToString(st *Struct, resolved *StructMap, root bool) string {
 	if root {
 		return typeDef + t + "\n"
 	}
-	return propToString(st.Name, t)
+	return propToString(st.Name, t, st.Required)
 }

@@ -10,6 +10,7 @@ type Struct struct {
 	Ref        string
 	Packages   map[string]string
 	Properties PropertyList
+	Required   bool
 }
 
 // PropertyList is array of Struct
