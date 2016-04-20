@@ -213,6 +213,9 @@ func structToString(st *Struct, resolved *StructMap, root bool) string {
 	}
 	if !root && st.Ref != "" {
 		if res, ok := (*resolved)[st.Ref]; ok {
+			if typePre == "" {
+				typePre = "*"
+			}
 			return propToString(st.Name, typePre+varfmt.PublicVarName(res.Key()))
 		}
 	}
