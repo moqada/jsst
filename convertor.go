@@ -179,7 +179,7 @@ func extractProps(name string, sc *schema.Schema, resolved *StructMap) (*Struct,
 			st.AddPkg(p)
 		}
 		// TODO: ref == "" -> uuid?
-		if ref != "" {
+		if ref != "" && s.Type == "object" {
 			(*resolved)[ref] = &st
 		}
 	}
@@ -219,19 +219,27 @@ func propToString(name, goType string, required bool) string {
 
 // Convert Struct into string
 func structToString(st *Struct, resolved *StructMap, root bool) string {
+	// FIXME: too dirty
 	typePre := ""
 	typeDef := fmt.Sprintf("type %s ", varfmt.PublicVarName(st.Key()))
 	if st.Type == "array" {
-		st = &st.Properties[0]
 		typePre = "[]"
 	}
-	if !root && st.Ref != "" {
-		if res, ok := (*resolved)[st.Ref]; ok {
-			if typePre == "" {
-				typePre = "*"
-			}
-			return propToString(st.Name, typePre+varfmt.PublicVarName(res.Key()), st.Required)
+	if !root {
+		if st.Ref == "" && st.Type == "array" {
+			st = &st.Properties[0]
 		}
+		if st.Ref != "" {
+			if res, ok := (*resolved)[st.Ref]; ok {
+				if typePre == "" {
+					typePre = "*"
+				}
+				return propToString(st.Name, typePre+varfmt.PublicVarName(res.Key()), st.Required)
+			}
+		}
+	}
+	if st.Type == "array" {
+		st = &st.Properties[0]
 	}
 	t := st.Type
 	if st.Type == "object" {
