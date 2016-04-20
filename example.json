@@ -71,6 +71,45 @@
         }
       }
     },
+    "machine": {
+      "$schema": "http://json-schema.org/draft-04/hyper-schema",
+      "title": "Machine",
+      "description": "Machine",
+      "stability": "prototype",
+      "strictProperties": true,
+      "type": [
+        "object"
+      ],
+      "definitions": {
+        "id": {
+          "description": "ID",
+          "readOnly": true,
+          "format": "uuid",
+          "type": [
+            "string"
+          ]
+        },
+        "name": {
+          "description": "マシン名",
+          "readOnly": true,
+          "type": [
+            "string"
+          ]
+        },
+        "identity": {
+          "$ref": "#/definitions/machine/definitions/id"
+        }
+      },
+      "links": [],
+      "properties": {
+        "id": {
+          "$ref": "#/definitions/machine/definitions/id"
+        },
+        "name": {
+          "$ref": "#/definitions/machine/definitions/name"
+        }
+      }
+    },
     "user": {
       "$schema": "http://json-schema.org/draft-04/hyper-schema",
       "title": "ユーザ",
@@ -245,6 +284,9 @@
         "addressLine2": {
           "$ref": "#/definitions/user/definitions/addressLine2"
         },
+        "machine": {
+          "$ref": "#/definitions/machine"
+        },
         "infos": {
           "description": "infos",
           "type": [
@@ -268,6 +310,9 @@
   "properties": {
     "info": {
       "$ref": "#/definitions/info"
+    },
+    "machine": {
+      "$ref": "#/definitions/machine"
     },
     "user": {
       "$ref": "#/definitions/user"

@@ -19,6 +19,10 @@ func ExampleConvertor() {
 	// 	PublishedAt time.Time `json:"publishedAt,omitempty"`
 	// 	Title       string    `json:"title,omitempty"`
 	// }
+	// type Machine struct {
+	// 	ID   string `json:"id,omitempty"`
+	// 	Name string `json:"name,omitempty"`
+	// }
 	// type User struct {
 	// 	AddressCity  string    `json:"addressCity,omitempty"`
 	// 	AddressLine1 string    `json:"addressLine1,omitempty"`
@@ -30,8 +34,8 @@ func ExampleConvertor() {
 	// 	ID           string    `json:"id"`
 	// 	Infos        []Info    `json:"infos,omitempty"`
 	// 	LastName     string    `json:"lastName"`
+	// 	Machine      *Machine  `json:"machine,omitempty"`
 	// 	RegisteredAt time.Time `json:"registeredAt"`
 	// 	Tel          string    `json:"tel,omitempty"`
 	// }
-
 }
