@@ -5,6 +5,7 @@ import (
 	"go/format"
 	"io"
 	"sort"
+	"strings"
 
 	"github.com/achiku/varfmt"
 	"github.com/lestrrat/go-jshschema"
@@ -95,9 +96,14 @@ func (con *Convertor) Write(out io.Writer) error {
 // Extract Schema to StructMap
 func (con *Convertor) Extract() error {
 	for name, sc := range con.schema.Properties {
-		_, err := extractProps(name, sc, &con.Resolved)
+		_, err := extractProps(name, sc, &con.Resolved, con.schema)
 		if err != nil {
 			return err
+		}
+		ref := ""
+		if !sc.IsResolved() {
+			ref = sc.Reference
+			sc, err = sc.Resolve(con.schema)
 		}
 		links := sc.Extras["links"]
 		if links == nil {
@@ -106,10 +112,48 @@ func (con *Convertor) Extract() error {
 		hsc := hschema.New()
 		hsc.Extract(sc.Extras)
 		for _, link := range hsc.Links {
-			if link.TargetSchema != nil {
-				// TODO: Extract TargetSchema
-				continue
+			var reqSt *Struct
+			reqName := varfmt.PublicVarName(name + strings.Title(link.Rel) + "Request")
+			ls := link.Schema
+			if ls == nil {
+				reqSt = &Struct{Type: "object"}
+			} else {
+				if !ls.IsResolved() {
+					ls, err = ls.Resolve(con.schema)
+					if err != nil {
+						return err
+					}
+				}
+				reqSt, err = extractProps(reqName, link.Schema, &con.Resolved, con.schema)
+				if err != nil {
+					return err
+				}
 			}
+			reqSt.Name = reqName
+			reqSt.Link = true
+			con.Resolved[reqName] = reqSt
+			resName := varfmt.PublicVarName(name + strings.Title(link.Rel) + "Response")
+			ts := sc
+			lf := ref
+			if link.TargetSchema != nil {
+				lf = ""
+				ts = link.TargetSchema
+			}
+			if !ts.IsResolved() {
+				lf = ts.Reference
+				ts, err = ts.Resolve(con.schema)
+				if err != nil {
+					return err
+				}
+			}
+			resSt, err := extractProps(name+link.Rel+"Response", ts, &con.Resolved, con.schema)
+			if err != nil {
+				return err
+			}
+			resSt.Name = resName
+			resSt.Link = true
+			resSt.Ref = lf
+			con.Resolved[resName] = resSt
 		}
 	}
 	return nil
@@ -130,12 +174,12 @@ func isIncludes(name string, array []string) bool {
 }
 
 // extractProps extract Schema.Properties to Struct
-func extractProps(name string, sc *schema.Schema, resolved *StructMap) (*Struct, error) {
+func extractProps(name string, sc *schema.Schema, resolved *StructMap, ctx interface{}) (*Struct, error) {
 	var err error
 	var ref string
 	if !sc.IsResolved() {
 		ref = sc.Reference
-		sc, err = sc.Resolve(nil)
+		sc, err = sc.Resolve(ctx)
 		if err != nil {
 			return nil, err
 		}
@@ -151,7 +195,7 @@ func extractProps(name string, sc *schema.Schema, resolved *StructMap) (*Struct,
 	switch t {
 	case "object":
 		for k, v := range sc.Properties {
-			s, err := extractProps(k, v, resolved)
+			s, err := extractProps(k, v, resolved, ctx)
 			if err != nil {
 				return nil, err
 			}
@@ -170,7 +214,7 @@ func extractProps(name string, sc *schema.Schema, resolved *StructMap) (*Struct,
 			// TODO: Support multiple types
 			return nil, fmt.Errorf("Multiple Items doesnot support.")
 		}
-		s, err := extractProps(name, sc.Items.Schemas[0], resolved)
+		s, err := extractProps(name, sc.Items.Schemas[0], resolved, ctx)
 		if err != nil {
 			return nil, err
 		}
@@ -192,7 +236,7 @@ func getPropertyType(s *schema.Schema) (string, string, error) {
 	if len(s.Type) != 1 {
 		// TODO: Support multiple types
 		// TODO: Support Nullable
-		return "", pkg, fmt.Errorf("Multiple Types doesnot Support.")
+		return "", pkg, fmt.Errorf("Multiple Types doesnot Support. %s", s.Type)
 	}
 	t := s.Type[0].String()
 	switch t {
@@ -222,11 +266,9 @@ func structToString(st *Struct, resolved *StructMap, root bool) string {
 	// FIXME: too dirty
 	typePre := ""
 	typeDef := fmt.Sprintf("type %s ", varfmt.PublicVarName(st.Key()))
-	if st.Type == "array" {
-		typePre = "[]"
-	}
 	if !root {
 		if st.Ref == "" && st.Type == "array" {
+			typePre = "[]"
 			st = &st.Properties[0]
 		}
 		if st.Ref != "" {
@@ -239,16 +281,22 @@ func structToString(st *Struct, resolved *StructMap, root bool) string {
 		}
 	}
 	if st.Type == "array" {
+		typePre = "[]"
 		st = &st.Properties[0]
 	}
 	t := st.Type
 	if st.Type == "object" {
-		t = "struct {\n"
-		sort.Sort(st.Properties)
-		for _, prop := range st.Properties {
-			t += structToString(&prop, resolved, false)
+		res, ok := (*resolved)[st.Ref]
+		if st.Link && ok {
+			t = typePre + varfmt.PublicVarName(res.Key())
+		} else {
+			t = "struct {\n"
+			sort.Sort(st.Properties)
+			for _, prop := range st.Properties {
+				t += structToString(&prop, resolved, false)
+			}
+			t += "}"
 		}
-		t += "}"
 	}
 	t = typePre + t
 	if root {

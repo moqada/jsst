@@ -38,4 +38,17 @@ func ExampleConvertor() {
 	// 	RegisteredAt time.Time `json:"registeredAt"`
 	// 	Tel          string    `json:"tel,omitempty"`
 	// }
+	// type InfoInstancesRequest struct {
+	// }
+	// type InfoInstancesResponse Info
+	// type UserCreateRequest struct {
+	// 	Birthday  string `json:"birthday"`
+	// 	FirstName string `json:"firstName"`
+	// 	LastName  string `json:"lastName"`
+	// 	Password  string `json:"password"`
+	// }
+	// type UserCreateResponse User
+	// type UserSelfRequest struct {
+	// }
+	// type UserSelfResponse User
 }

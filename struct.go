@@ -11,6 +11,8 @@ type Struct struct {
 	Packages   map[string]string
 	Properties PropertyList
 	Required   bool
+	// FIXME: too dirty
+	Link bool
 }
 
 // PropertyList is array of Struct
@@ -19,7 +21,7 @@ type PropertyList []Struct
 // Key is name of Struct
 func (st *Struct) Key() string {
 	name := st.Name
-	if st.Ref != "" {
+	if !st.Link && st.Ref != "" {
 		slice := strings.Split(st.Ref, "/")
 		name = slice[len(slice)-1]
 	}
