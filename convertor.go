@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go/format"
 	"io"
+	"regexp"
 	"sort"
 	"strings"
 
@@ -15,6 +16,10 @@ import (
 const (
 	// DefaultPackage is default package name
 	DefaultPackage = "main"
+)
+
+var (
+	instancesRegex = regexp.MustCompile("(^|-)instances$")
 )
 
 // Convertor convert JSON Schema to Struct
@@ -150,10 +155,19 @@ func (con *Convertor) Extract() error {
 			if err != nil {
 				return err
 			}
-			resSt.Name = resName
 			resSt.Link = true
+			resSt.Name = resName
 			resSt.Ref = lf
-			con.Resolved[resName] = resSt
+			if link.TargetSchema == nil && instancesRegex.MatchString(link.Rel) {
+				other := &Struct{
+					Name: resName,
+					Type: "array",
+				}
+				other.Properties = append(other.Properties, *resSt)
+				con.Resolved[resName] = other
+			} else {
+				con.Resolved[resName] = resSt
+			}
 		}
 	}
 	return nil
@@ -288,7 +302,7 @@ func structToString(st *Struct, resolved *StructMap, root bool) string {
 	if st.Type == "object" {
 		res, ok := (*resolved)[st.Ref]
 		if st.Link && ok {
-			t = typePre + varfmt.PublicVarName(res.Key())
+			t = varfmt.PublicVarName(res.Key())
 		} else {
 			t = "struct {\n"
 			sort.Sort(st.Properties)
