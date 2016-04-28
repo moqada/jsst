@@ -40,7 +40,7 @@ func ExampleConvertor() {
 	// }
 	// type InfoInstancesRequest struct {
 	// }
-	// type InfoInstancesResponse Info
+	// type InfoInstancesResponse []Info
 	// type UserCreateRequest struct {
 	// 	Birthday  string `json:"birthday"`
 	// 	FirstName string `json:"firstName"`
