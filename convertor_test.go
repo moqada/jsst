@@ -14,38 +14,38 @@ func ExampleConvertor() {
 	// )
 	//
 	// type Info struct {
-	// 	Content     string    `json:"content,omitempty"`
-	// 	ID          string    `json:"id,omitempty"`
-	// 	PublishedAt time.Time `json:"publishedAt,omitempty"`
-	// 	Title       string    `json:"title,omitempty"`
+	// 	Content     string    `json:"content,omitempty" schema:"content"`
+	// 	ID          string    `json:"id,omitempty" schema:"id"`
+	// 	PublishedAt time.Time `json:"publishedAt,omitempty" schema:"publishedAt"`
+	// 	Title       string    `json:"title,omitempty" schema:"title"`
 	// }
 	// type Machine struct {
-	// 	ID   string `json:"id,omitempty"`
-	// 	Name string `json:"name,omitempty"`
+	// 	ID   string `json:"id,omitempty" schema:"id"`
+	// 	Name string `json:"name,omitempty" schema:"name"`
 	// }
 	// type User struct {
-	// 	AddressCity  string    `json:"addressCity,omitempty"`
-	// 	AddressLine1 string    `json:"addressLine1,omitempty"`
-	// 	AddressLine2 string    `json:"addressLine2,omitempty"`
-	// 	AddressState string    `json:"addressState,omitempty"`
-	// 	AddressZip   string    `json:"addressZip,omitempty"`
-	// 	Birthday     string    `json:"birthday"`
-	// 	FirstName    string    `json:"firstName"`
-	// 	ID           string    `json:"id"`
-	// 	Infos        []Info    `json:"infos,omitempty"`
-	// 	LastName     string    `json:"lastName"`
-	// 	Machine      *Machine  `json:"machine,omitempty"`
-	// 	RegisteredAt time.Time `json:"registeredAt"`
-	// 	Tel          string    `json:"tel,omitempty"`
+	// 	AddressCity  string    `json:"addressCity,omitempty" schema:"addressCity"`
+	// 	AddressLine1 string    `json:"addressLine1,omitempty" schema:"addressLine1"`
+	// 	AddressLine2 string    `json:"addressLine2,omitempty" schema:"addressLine2"`
+	// 	AddressState string    `json:"addressState,omitempty" schema:"addressState"`
+	// 	AddressZip   string    `json:"addressZip,omitempty" schema:"addressZip"`
+	// 	Birthday     string    `json:"birthday" schema:"birthday"`
+	// 	FirstName    string    `json:"firstName" schema:"firstName"`
+	// 	ID           string    `json:"id" schema:"id"`
+	// 	Infos        []Info    `json:"infos,omitempty" schema:"infos"`
+	// 	LastName     string    `json:"lastName" schema:"lastName"`
+	// 	Machine      *Machine  `json:"machine,omitempty" schema:"machine"`
+	// 	RegisteredAt time.Time `json:"registeredAt" schema:"registeredAt"`
+	// 	Tel          string    `json:"tel,omitempty" schema:"tel"`
 	// }
 	// type InfoInstancesRequest struct {
 	// }
 	// type InfoInstancesResponse []Info
 	// type UserCreateRequest struct {
-	// 	Birthday  string `json:"birthday"`
-	// 	FirstName string `json:"firstName"`
-	// 	LastName  string `json:"lastName"`
-	// 	Password  string `json:"password"`
+	// 	Birthday  string `json:"birthday" schema:"birthday"`
+	// 	FirstName string `json:"firstName" schema:"firstName"`
+	// 	LastName  string `json:"lastName" schema:"lastName"`
+	// 	Password  string `json:"password" schema:"password"`
 	// }
 	// type UserCreateResponse User
 	// type UserSelfRequest struct {

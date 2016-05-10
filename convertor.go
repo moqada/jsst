@@ -272,7 +272,8 @@ func propToString(name, goType string, required bool) string {
 	if !required {
 		empty = ",omitempty"
 	}
-	return fmt.Sprintf("%s %s `json:\"%s%s\"`\n", varfmt.PublicVarName(name), goType, name, empty)
+	tag := fmt.Sprintf("json:\"%s%s\" schema:\"%s\"", name, empty, name)
+	return fmt.Sprintf("%s %s `%s`\n", varfmt.PublicVarName(name), goType, tag)
 }
 
 // Convert Struct into string
