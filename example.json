@@ -84,9 +84,8 @@
         "id": {
           "description": "ID",
           "readOnly": true,
-          "format": "uuid",
           "type": [
-            "string"
+            "integer"
           ]
         },
         "name": {

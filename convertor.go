@@ -256,6 +256,8 @@ func getPropertyType(s *schema.Schema) (string, string, error) {
 	switch t {
 	case "number":
 		t = "float64"
+	case "integer":
+		t = "int64"
 	case "boolean":
 		t = "bool"
 	case "string":

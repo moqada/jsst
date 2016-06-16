@@ -20,7 +20,7 @@ func ExampleConvertor() {
 	// 	Title       string    `json:"title,omitempty" schema:"title"`
 	// }
 	// type Machine struct {
-	// 	ID   string `json:"id,omitempty" schema:"id"`
+	// 	ID   int64  `json:"id,omitempty" schema:"id"`
 	// 	Name string `json:"name,omitempty" schema:"name"`
 	// }
 	// type User struct {
