@@ -11,6 +11,7 @@ import (
 	"github.com/achiku/varfmt"
 	"github.com/lestrrat/go-jshschema"
 	"github.com/lestrrat/go-jsschema"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -200,7 +201,7 @@ func extractProps(name string, sc *schema.Schema, resolved *StructMap, ctx inter
 	}
 	t, pkg, err := getPropertyType(sc)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrapf(err, "getPropertyType failed %s", name)
 	}
 	st := Struct{Name: name, Type: t, Ref: ref}
 	if pkg != "" {
@@ -226,7 +227,7 @@ func extractProps(name string, sc *schema.Schema, resolved *StructMap, ctx inter
 	case "array":
 		if len(sc.Items.Schemas) != 1 {
 			// TODO: Support multiple types
-			return nil, fmt.Errorf("Multiple Items doesnot support.")
+			return nil, fmt.Errorf("multiple items not supported")
 		}
 		s, err := extractProps(name, sc.Items.Schemas[0], resolved, ctx)
 		if err != nil {
@@ -246,13 +247,23 @@ func extractProps(name string, sc *schema.Schema, resolved *StructMap, ctx inter
 
 // getPropertyType convert Schema into type of Go
 func getPropertyType(s *schema.Schema) (string, string, error) {
-	pkg := ""
-	if len(s.Type) != 1 {
+	var (
+		sm  *schema.Schema
+		pkg string
+		err error
+	)
+	sm = s
+	if len(s.Type) != 1 && s.IsResolved() {
 		// TODO: Support multiple types
 		// TODO: Support Nullable
-		return "", pkg, fmt.Errorf("Multiple Types doesnot Support. %s", s.Type)
+		return "", pkg, fmt.Errorf("multiple types not supported, types:%s", s.Type)
+	} else if !s.IsResolved() {
+		sm, err = s.Resolve(nil)
+		if err != nil {
+			return "", pkg, fmt.Errorf("failed to resolve, types:%s", s.Type)
+		}
 	}
-	t := s.Type[0].String()
+	t := sm.Type[0].String()
 	switch t {
 	case "number":
 		t = "float64"

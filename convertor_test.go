@@ -1,6 +1,36 @@
 package main
 
-import "os"
+import (
+	"os"
+	"testing"
+
+	schema "github.com/lestrrat/go-jsschema"
+)
+
+func TestSchemaFunctions(t *testing.T) {
+	sc, err := schema.ReadFile("./example.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, df := range sc.Definitions {
+		t.Logf("%+v", df.Title)
+		for n, tp := range df.Definitions {
+			if tp.IsResolved() {
+				t.Logf("  %s: %s(%s) res: %t", n, tp.Type, tp.Format, tp.IsResolved())
+			} else {
+				a, err := tp.Resolve(nil)
+				if err != nil {
+					t.Fatal(err)
+				}
+				t.Logf("  %s: %s(%s) res: %t", n, a.Type, a.Format, a.IsResolved())
+			}
+		}
+	}
+	for n := range sc.Properties {
+		t.Logf("%+v", n)
+	}
+}
 
 func ExampleConvertor() {
 	con, _ := ReadFile("./example.json")
